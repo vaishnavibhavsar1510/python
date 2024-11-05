@@ -1,0 +1,75 @@
+class Solution:
+    # Helper method to check if it's safe to place a queen at (row, col)
+    def isSafe1(self, row, col, board, n):
+        # Store the original row and column for resetting later
+        duprow = row
+        dupcol = col
+
+        # Check the upper left diagonal for any existing queen
+        while row >= 0 and col >= 0:
+            if board[row][col] == 'Q':  # If a queen is found, it's not safe
+                return False
+            row -= 1
+            col -= 1
+
+        # Reset row and column to original positions
+        row = duprow
+        col = dupcol
+
+        # Check the left side of the current row for any existing queen
+        while col >= 0:
+            if board[row][col] == 'Q':  # If a queen is found, it's not safe
+                return False
+            col -= 1
+
+        # Reset row and column to original positions
+        row = duprow
+        col = dupcol
+
+        # Check the lower left diagonal for any existing queen
+        while row < n and col >= 0:
+            if board[row][col] == 'Q':  # If a queen is found, it's not safe
+                return False
+            row += 1
+            col -= 1
+
+        # If no queen is found in any direction, it's safe to place a queen
+        return True
+
+    # Recursive method to solve the N-Queens problem
+    def solve(self, col, board, ans, n):
+        # Base case: If all columns are filled, store the solution
+        if col == n:
+            ans.append(list(board))  # Add the current board configuration to the answer list
+            return
+
+        # Try placing a queen in each row for the current column
+        for row in range(n):
+            if self.isSafe1(row, col, board, n):  # Check if it's safe to place a queen
+                # Place the queen at (row, col)
+                board[row] = board[row][:col] + 'Q' + board[row][col+1:]
+                # Recursively place queens in the next column
+                self.solve(col + 1, board, ans, n)
+                # Backtrack by removing the queen from (row, col)
+                board[row] = board[row][:col] + '.' + board[row][col+1:]
+
+    # Main method to initiate solving the N-Queens problem
+    def solveNQueens(self, n):
+        ans = []  # List to store all solutions
+        # Initialize the board as a list of strings with '.' indicating empty spaces
+        board = ['.' * n for _ in range(n)]
+        # Start the recursive solving process from the first column
+        self.solve(0, board, ans, n)
+        return ans  # Return the list of solutions
+
+# Example usage
+n = 5  # Size of the board (5x5)
+obj = Solution()  # Create an instance of the Solution class
+ans = obj.solveNQueens(n)  # Get all solutions for the 5x5 board
+
+# Print all the solutions
+for i in range(len(ans)):
+    print(f"Arrangement {i + 1}")
+    for j in range(len(ans[0])):
+        print(ans[i][j])  # Print each row of the current arrangement
+    print()  # Print a newline to separate arrangements
